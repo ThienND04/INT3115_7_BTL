@@ -1,15 +1,35 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { loginUser } from '../service/userApi';
 
 export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false); // Trạng thái loading
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         if (email === '' || password === '') {
             Alert.alert('Thông báo', 'Vui lòng nhập đầy đủ thông tin!');
         } else {
-            navigation.navigate('Home');
+            setLoading(true);
+            try {
+                const response = await loginUser(email, password);
+                console.log('Login response:', response.data);
+
+                // Giả sử backend trả token sau khi login thành công
+                // const { token } = response.data;
+
+                // Lưu token vào AsyncStorage hoặc state (tuỳ vào ứng dụng)
+                // AsyncStorage.setItem('authToken', token);
+
+                Alert.alert('Thành công', 'Đăng nhập thành công!');
+                navigation.navigate('Home'); // Điều hướng về màn hình Home
+            } catch (error) {
+                console.error('Login error:', error.response?.data || error.message);
+                Alert.alert('Thất bại', 'Đăng nhập thất bại. Vui lòng thử lại.');
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
@@ -30,7 +50,11 @@ export default function LoginScreen({ navigation }) {
                 onChangeText={setPassword}
                 secureTextEntry
             />
-            <Button title="Đăng nhập" onPress={handleLogin} />
+            {loading ? (
+                <ActivityIndicator size="large" color="#42a5f5" />
+            ) : (
+                <Button title="Đăng nhập" onPress={handleLogin} />
+            )}
         </View>
     );
 }
