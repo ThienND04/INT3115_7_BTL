@@ -18,9 +18,6 @@ public class Post {
     @Column(name = "POST_ID")
     private Integer postId;
 
-    @Column(name = "TITLE", nullable = false)
-    private String title;
-
     @Column(name = "CONTENT", nullable = true)
     private String content;
 

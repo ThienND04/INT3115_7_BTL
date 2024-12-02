@@ -1,4 +1,5 @@
-import axiosInstance from './axiosConfig';
+import axios from './axiosConfig';
+import Post from '../model/post.js'
 
 // Lấy danh sách tin tức
 export const createPost = async (postData) => {
@@ -33,7 +34,7 @@ export const deletePost = async (postId) => {
 
 export const getPostById = async (postId) => {
     try {
-        const response = await axiosInstance.get(`/post/${postId}`);
+        const response = await axiosInstance.get(`/posts/${postId}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching post by ID:', error.response.data);
@@ -43,20 +44,10 @@ export const getPostById = async (postId) => {
 
 export const getPostsByCategory = async (category, page, perPage) => {
     try {
-        const response = await axiosInstance.get(`/post/newPostByCategory?category=${category}&page=${page}&perPage=${perPage}`);
+        const response = await axiosInstance.get(`/posts/newPostByCategory?category=${category}&page=${page}&perpage=${perPage}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching posts by category:', error.response.data);
         throw error;
     }
 };
-
-export const getNewPosts = async (page, perPage) => {
-    try {
-      const response = await axiosInstance.get(`/post/newPost?page=${page}&perPage=${perPage}`);
-      return response.data; // Assumes the API returns a list of posts
-    } catch (error) {
-      console.error('Error fetching new posts:', error.response?.data || error.message);
-      throw error;
-    }
-  };
