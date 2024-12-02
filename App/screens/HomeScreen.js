@@ -1,209 +1,361 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ScrollView, ActivityIndicator, ToastAndroid } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
-const Tab = createBottomTabNavigator();
+import { getNewPosts } from '../service/postApi';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen() {
     const navigation = useNavigation();
 
-    const newsData = [
-        { id: '1', title: 'Tin tức 1', description: 'Mô tả tin tức 1', time: 'Today • 23 min' },
-        { id: '2', title: 'Tin tức 2', description: 'Mô tả tin tức 2', time: 'Today • 23 min' },
-        { id: '3', title: 'Tin tức 3', description: 'Mô tả tin tức 3', time: 'Today • 23 min' },
-        { id: '4', title: 'Tin tức 4', description: 'Mô tả tin tức 4', time: 'Today • 23 min' },
-        { id: '5', title: 'Tin tức 5', description: 'Mô tả tin tức 5', time: 'Today • 23 min' },
-        { id: '6', title: 'Tin tức 6', description: 'Mô tả tin tức 6', time: 'Today • 23 min' },
-        { id: '7', title: 'Tin tức 7', description: 'Mô tả tin tức 7', time: 'Today • 23 min' },
-        { id: '8', title: 'Tin tức 8', description: 'Mô tả tin tức 8', time: 'Today • 23 min' },
-    ];
+    const [posts, setPosts] = useState([])
+    const [headlinePost, setHeadlinePost] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [menuVisible, setMenuVisible] = useState(false);
 
-    const renderNewsItem = ({ item }) => (
-        <View style={styles.newsItem}>
-            <Image style={styles.newsImage} source={{ uri: 'https://via.placeholder.com/50' }} />
-            <View style={styles.newsContent}>
-                <Text style={styles.newsTitle}>{item.title}</Text>
-                <Text style={styles.newsDescription}>{item.description}</Text>
-                <Text style={styles.newsTime}>{item.time}</Text>
-            </View>
-            <TouchableOpacity 
-                onPress={() =>
-                    navigation.navigate('NewsDetails', {
-                    title: item.title,
-                    description: item.description,
-                    imageUri: 'https://via.placeholder.com/300',
-                    time: item.time,
-                    })
-                }>
-                <Text style={styles.playButton}>▶</Text>
-            </TouchableOpacity>
-        </View>
-    );
+    useEffect(() => {
+        fetchPosts();
+    }, []);
 
-    return (
-        <ScrollView style={styles.container} contentContainerStyle={styles.scrollContainer}>
-            <View style={styles.container}>
-                <View style={styles.mainContent}>
-                    <View style={styles.highlight}>
-                        <Image style={styles.highlightImage} source={{ uri: 'https://via.placeholder.com/80' }} />
-                        <View>
-                            <Text style={styles.highlightTitle}>Headline</Text>
-                            <Text style={styles.highlightSubtitle}>supporting text</Text>
-                            <TouchableOpacity style={styles.readButton}>
-                                <Text style={styles.readButtonText}>Đọc</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                    <Text style={styles.paragraph}>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...
-                    </Text>
-                    <Text style={styles.paragraph}>
-                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur...
-                    </Text>
-                    <Text style={styles.sectionTitle}>Tin mới</Text>
-                    <FlatList
-                        data={newsData}
-                        keyExtractor={(item) => item.id}
-                        renderItem={renderNewsItem}
-                        contentContainerStyle={{ paddingBottom: 20 }}
-                        showsVerticalScrollIndicator={false}
-                        ListFooterComponent={<View style={{ height: 50 }} />}
-                        scrollEnabled={false}
-                    />
+    const fetchPosts = async () => {
+        try {
+            const data = await getNewPosts(0, 20);
+            setPosts(data);
+
+            for (const post of posts) {
+                if (headlinePost == null || post.viewCount > headlinePost.viewCount) {
+                    setHeadlinePost(post)
+                    // console.log('headlinepose ok')
+                }
+            }
+        } catch (error) {
+            console.error('Failed to fetch posts:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const toggleMenu = () => {
+        setMenuVisible(!menuVisible);
+    };
+
+    const closeMenu = () => {
+        setMenuVisible(false);
+    };
+
+    const logOut = async () => {
+        try {
+            await AsyncStorage.clear()
+            navigation.navigate('Login')
+            ToastAndroid.show("Đăng xuất!", ToastAndroid.SHORT);
+        }
+        catch (error) {
+            console.log(error)
+        }
+    };
+
+    const renderPost = ({ item }) => (
+        <TouchableOpacity
+            style={styles.postCard}
+            onPress={() => navigation.navigate('PostDetails', { postId: item.postId })}
+        >
+            <Image
+                source={{ uri: 'https://images.baodantoc.vn/uploads/2020/Th%C3%A1ng%206/Ng%C3%A0y_16/2051fd49-6d6b-4f43-a023-5e23e07f175c.jpg' }}
+                style={styles.postThumbnail}
+                onError={(error) => console.log('Error loading image:', error)}
+            />
+            <View style={styles.postInfo}>
+                <Text style={styles.postTitle}>{item.title}</Text>
+                <Text style={styles.postDescription}>{item.content.substring(0, 30) + ' ...'}</Text>
+                <View style={styles.postFooter}>
+                    <Text style={styles.postDate}>Today • 23 min</Text>
+                    <Text style={styles.readMore}>→</Text>
                 </View>
             </View>
-        </ScrollView>
-        
+        </TouchableOpacity>
     );
-}
 
-export function TabBottom() {
     return (
-        <NavigationContainer>
-            <Tab.Navigator
-                screenOptions={({ route }) => ({
-                    tabBarIcon: ({ color, size }) => {
-                        let iconName;
-                        if (route.name === "Home") {
-                            iconName = "home-outline";
-                        } else if (route.name === "Quiz") {
-                            iconName = "help-circle-outline";
-                        } else if (route.name === "News") {
-                            iconName = "newspaper-outline";
-                        } else if (route.name === "Profile") {
-                            iconName = "person-outline";
-                        }
-                        return <Icon name={iconName} size={size} color={color} />;
-                    },
-                    tabBarActiveTintColor: "#6200EE",
-                    tabBarInactiveTintColor: "gray",
-                    tabBarStyle: { backgroundColor: "#F5F5F5" },
-                })}
-            >
-                <Tab.Screen name="Home" component={HomeScreen} options={{ title: "Trang Chủ" }} />
-                <Tab.Screen name="Quiz" component={QuizScreen} options={{ title: "Câu Đố" }} />
-                <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: "Hồ Sơ" }} />
-            </Tab.Navigator>
-        </NavigationContainer>
+        <View style={styles.container}>
+            {/* Header */}
+            <View style={styles.header}>
+                <Image
+                    source={{ uri: 'https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D' }}
+                    style={styles.avatar}
+                />
+                <Text style={styles.headerTitle}>Trang chủ</Text>
+                <TouchableOpacity onPress={toggleMenu}>
+                    <Text style={styles.icon}>☰</Text>
+                </TouchableOpacity>
+            </View>
+            {/* Popup Menu */}
+            {menuVisible && (
+                <View style={styles.menuContainer}>
+                    {/* Overlay nền tối */}
+                    <TouchableOpacity
+                        style={styles.menuOverlay}
+                        onPress={closeMenu}
+                        activeOpacity={1}
+                    />
+
+                    {/* Menu chính */}
+                    <View style={styles.verticalMenu}>
+                        <TouchableOpacity
+                            style={styles.menuItem}
+                            onPress={() => {
+                                alert('Cài đặt');
+                                closeMenu();
+                            }}
+                        >
+                            <Text style={styles.menuText}>Cài đặt</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.menuItem}
+                            onPress={() => {
+                                logOut()
+                            }}
+                        >
+                            <Text style={styles.menuText}>Đăng xuất</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
+            {loading ? (
+                <ActivityIndicator size="large" color="#6200EE" />
+            ) : (
+                <ScrollView>
+                    {/* Headline Post */}
+                    {headlinePost && (
+                        <View style={styles.headline}>
+                            <Image source={{ uri: 'https://images.baodantoc.vn/uploads/2020/Th%C3%A1ng%206/Ng%C3%A0y_16/2051fd49-6d6b-4f43-a023-5e23e07f175c.jpg' }} style={styles.headlineImage} />
+                            <View style={styles.headlineContent}>
+                                <Text style={styles.headlineTitle}>{headlinePost.title}</Text>
+                                <Text style={styles.headlineDescription}>{headlinePost.content}</Text>
+                                <TouchableOpacity
+                                    style={styles.readButton}
+                                    onPress={() => navigation.navigate('PostDetails', { postId: headlinePost.postId })}
+                                >
+                                    <Text style={styles.readButtonText}>Đọc</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    )}
+
+                    {/* Danh sách bài viết mới */}
+                    <Text style={styles.sectionTitle}>Tin mới</Text>
+                    <FlatList
+                        data={posts}
+                        renderItem={renderPost}
+                        keyExtractor={(item) => item.postId.toString()}
+                        contentContainerStyle={styles.postList}
+                    />
+                </ScrollView>
+            )}
+            <View style={styles.bottomTab}>
+                <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('Home')}>
+                    <Icon name="home" size={28} color="#000" />
+                    <Text style={styles.tabText}>Trang chủ</Text>
+                </TouchableOpacity>
+                {/* <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('Search')}>
+                    <Icon name="search" size={28} color="#000" />
+                    <Text style={styles.tabText}>Tìm kiếm</Text>
+                </TouchableOpacity> */}
+                <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('Quiz')}>
+                    <Icon name="quiz" size={28} color="#000" />
+                    <Text style={styles.tabText}>Câu đố</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('Profile')}>
+                    <Icon name="person" size={28} color="#000" />
+                    <Text style={styles.tabText}>Hồ sơ</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F5F5',
+        backgroundColor: '#F7F7F7',
     },
     header: {
-        backgroundColor: '#6200EE',
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingTop: 40,
         padding: 20,
+        backgroundColor: '#FFF',
+        elevation: 3,
+        height: 100
+    },
+    avatar: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        marginRight: 16,
     },
     headerTitle: {
-        color: 'white',
+        flex: 1,
         fontSize: 20,
         fontWeight: 'bold',
+        color: '#333',
     },
-    mainContent: {
-        padding: 20,
-    },
-    highlight: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    highlightImage: {
-        width: 80,
-        height: 80,
-        marginRight: 10,
-        borderRadius: 10,
-        backgroundColor: '#E0E0E0',
-    },
-    highlightTitle: {
+    icon: {
         fontSize: 20,
-        fontWeight: 'bold',
+        color: '#333',
     },
-    highlightSubtitle: {
-        fontSize: 14,
-        color: '#757575',
+    headline: {
+        margin: 16,
+        backgroundColor: '#FFF',
+        borderRadius: 8,
+        elevation: 2,
+        overflow: 'hidden',
     },
-    readButton: {
-        marginTop: 10,
-        backgroundColor: '#6200EE',
-        paddingVertical: 5,
-        paddingHorizontal: 15,
-        borderRadius: 5,
+    headlineImage: {
+        width: '100%',
+        height: 180,
     },
-    readButtonText: {
-        color: 'white',
+    headlineContent: {
+        padding: 16,
     },
-    paragraph: {
-        marginBottom: 10,
-        fontSize: 14,
-        color: '#616161',
-    },
-    sectionTitle: {
-        marginTop: 20,
-        marginBottom: 10,
+    headlineTitle: {
         fontSize: 18,
         fontWeight: 'bold',
+        color: '#000',
+        marginBottom: 8,
     },
-    newsItem: {
-        flexDirection: 'row',
+    headlineDescription: {
+        fontSize: 14,
+        color: '#666',
+        marginBottom: 16,
+    },
+    readButton: {
+        backgroundColor: '#6200EE',
+        paddingVertical: 10,
+        borderRadius: 8,
         alignItems: 'center',
-        marginBottom: 15,
-        backgroundColor: 'white',
-        padding: 10,
-        borderRadius: 5,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        elevation: 2,
     },
-    newsImage: {
-        width: 50,
-        height: 50,
-        borderRadius: 5,
-        backgroundColor: '#E0E0E0',
-        marginRight: 10,
-    },
-    newsContent: {
-        flex: 1,
-    },
-    newsTitle: {
+    readButtonText: {
+        color: '#FFF',
         fontSize: 16,
         fontWeight: 'bold',
     },
-    newsDescription: {
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#000',
+        marginHorizontal: 16,
+        marginTop: 16,
+        marginBottom: 8,
+    },
+    postList: {
+        paddingHorizontal: 16,
+    },
+    postCard: {
+        flexDirection: 'row',
+        backgroundColor: '#FFF',
+        marginBottom: 8,
+        borderRadius: 8,
+        overflow: 'hidden',
+        elevation: 1,
+    },
+    postThumbnail: {
+        width: 80,
+        height: 80,
+        margin: 10,
+        borderRadius: 8,
+        resizeMode: 'contain'
+    },
+    postContent: {
+        flex: 1,
+        padding: 10,
+    },
+    postTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#000',
+    },
+    postDescription: {
         fontSize: 14,
-        color: '#757575',
-        marginBottom: 5,
+        color: '#666',
+        marginVertical: 4
     },
-    newsTime: {
+    postFooter: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    postDate: {
         fontSize: 12,
-        color: '#BDBDBD',
+        color: '#999',
     },
-    playButton: {
-        fontSize: 18,
+    postIcon: {
+        fontSize: 16,
         color: '#6200EE',
+    },
+    postInfo: {
+        padding: 10
+    },
+    bottomTab: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        height: 60,
+        backgroundColor: '#f7f6f2',
+    },
+    tabItem: {
+        alignItems: 'center',
+        width: '30%'
+    },
+    tabText: {
+        color: '#FFF',
+        fontSize: 14,
+    },
+    bottomTabIcon: {
+        width: 20,
+        height: 20
+    },
+    menuContainer: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+        zIndex: 999, // Đảm bảo menu luôn trên cùng
+    },
+    // Overlay nền tối
+    menuOverlay: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    // Menu chính
+    verticalMenu: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        width: '50%',
+        height: '100%',
+        backgroundColor: '#fff',
+        paddingVertical: 20,
+        elevation: 10, // Tăng shadow và độ ưu tiên trên Android
+        zIndex: 9999, // Ưu tiên cao nhất cho menu
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.5,
+        shadowRadius: 4,
+    },
+    // Item trong menu
+    menuItem: {
+        paddingVertical: 15,
+        paddingHorizontal: 20,
+        borderBottomColor: '#e0e0e0',
+        borderBottomWidth: 1,
+    },
+    menuText: {
+        fontSize: 16,
     },
 });
