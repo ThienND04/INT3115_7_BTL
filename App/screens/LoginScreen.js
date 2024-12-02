@@ -16,6 +16,12 @@ export default function LoginScreen({ navigation }) {
                 const response = await loginUser(email, password);
                 console.log('Login response:', response.data);
 
+                // Giả sử backend trả token sau khi login thành công
+                // const { token } = response.data;
+
+                // Lưu token vào AsyncStorage hoặc state (tuỳ vào ứng dụng)
+                // AsyncStorage.setItem('authToken', token);
+
                 Alert.alert('Thành công', 'Đăng nhập thành công!');
                 navigation.navigate('Home'); // Điều hướng về màn hình Home
             } catch (error) {
