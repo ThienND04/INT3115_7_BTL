@@ -22,13 +22,18 @@ export default function HomeScreen() {
         try {
             const data = await getNewPosts(0, 20);
             setPosts(data);
+            let tmp = null;
+            let cnt = 0;
 
-            for (const post of posts) {
-                if (headlinePost == null || post.viewCount > headlinePost.viewCount) {
-                    setHeadlinePost(post)
-                    // console.log('headlinepose ok')
+            for (const post of data) {
+                cnt ++;
+                console.log(cnt);
+                if (tmp == null || post.viewCount > tmp.viewCount) {
+                    tmp = post
+                    console.log('headlinepose ok: ', cnt);
                 }
             }
+            setHeadlinePost(tmp);
         } catch (error) {
             console.error('Failed to fetch posts:', error);
         } finally {
