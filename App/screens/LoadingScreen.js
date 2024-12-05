@@ -8,6 +8,7 @@ export default function LoadingScreen({navigation}) {
     async function AutoLogin() {
         let route = 'Loading'
         try {
+            console.log('auto login')
             let email = await AsyncStorage.getItem('email');
             let password = await AsyncStorage.getItem('password');
             let responseData = await loginUser(email, password);
