@@ -7,6 +7,10 @@ export const loginUser = async (_email, _password) => {
         const response = await axiosInstance.post('/auth/login', {
             email: _email,
             password: _password,
+            headers: {
+                'Content-Type': 'application/json',
+                // 'Accept': '*/*',
+            }
         });
 
         console.log(response.data)
@@ -28,7 +32,7 @@ export const loginUser = async (_email, _password) => {
 
         return response.data;
     } catch (error) {
-        console.error('Login error:', error);
+        console.log('Login error1:', error);
         throw error;
     }
 };
@@ -36,12 +40,28 @@ export const loginUser = async (_email, _password) => {
 // Đăng ký
 export const registerUser = async (userName, email, password) => {
     try {
-        const response = await axiosInstance.post('/auth/signup', { userName, email, password });
-
+        const response = await axiosInstance.post(
+            '/auth/signup',
+            {
+                'username' : userName,
+                'email' : email,
+                'password' : password
+            },
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    // 'Accept': '*/*',
+                }
+            }
+        );
+        console.log('response data', response.data)
+        // console.log(axiosInstance.toString())
         return response.data;
     } catch (error) {
-        console.error('Register error:', error);
-        throw error;
+        // console.error('Register error:', error);
+        console.log('Registration failed:', error);
+        // console.log(error.response.data)
+        return Promise.reject(error);
     }
 };
 
@@ -53,7 +73,7 @@ export const getUserByEmail = async (email) => {
 
         return response.data;
     } catch (error) {
-        console.error('Login error:', error);
+        console.log('Login error:', error);
         throw error;
     }
 }
@@ -76,7 +96,7 @@ export const getMyAvatar = async () => {
         const response = await axiosInstance.get('/user/myAvatar');
         return response.data; // Expected to return the avatar URL or image data
     } catch (error) {
-        console.error('Error fetching my avatar:', error.response?.data || error.message);
+        console.log('Error fetching my avatar:', error.response?.data || error.message);
         throw error;
     }
 };
@@ -86,7 +106,7 @@ export const getAvatarByUserId = async (id) => {
         const response = await axiosInstance.get(`/user/Avatar?id=${id}`);
         return response.data; // Expected to return the avatar URL or image data
     } catch (error) {
-        console.error(`Error fetching avatar with id = ${id}:`, error.response?.data || error.message);
+        console.log(`Error fetching avatar with id = ${id}:`, error.response?.data || error.message);
         throw error;
     }
 };
