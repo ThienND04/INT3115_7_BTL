@@ -63,7 +63,7 @@ export default function HomeScreen() {
     const renderPost = ({ item }) => (
         <TouchableOpacity
             style={styles.postCard}
-            onPress={() => navigation.navigate('PostDetails', { postId: item.postId })}
+            onPress={() => navigation.navigate('PostDetail', { post: item })}
         >
             <Image
                 source={{ uri: 'https://images.baodantoc.vn/uploads/2020/Th%C3%A1ng%206/Ng%C3%A0y_16/2051fd49-6d6b-4f43-a023-5e23e07f175c.jpg' }}
@@ -139,7 +139,7 @@ export default function HomeScreen() {
                                 <Text style={styles.headlineDescription}>{headlinePost.content}</Text>
                                 <TouchableOpacity
                                     style={styles.readButton}
-                                    onPress={() => navigation.navigate('PostDetails', { postId: headlinePost.postId })}
+                                    onPress={() => navigation.navigate('PostDetail', { post : headlinePost })}
                                 >
                                     <Text style={styles.readButtonText}>Đọc</Text>
                                 </TouchableOpacity>
