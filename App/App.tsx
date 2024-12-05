@@ -3,12 +3,11 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import HomeScreen from "./screens/HomeScreen.js";
 import QuizScreen from "./screens/QuizzScreen";
-import NewsScreen from "./screens/NewsDetailScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import LoginScreen from "./screens/LoginScreen.js";
-import NewsDetailsScreen from "./screens/NewsDetailScreen";
 import LoadingScreen from './screens/LoadingScreen.js';
 import SignUpScreen from './screens/SignUpScreen.js';
+import PostDetailScreen from './screens/PostDetailScreen.js';
 
 const Stack = createStackNavigator();
 
@@ -32,8 +31,8 @@ export default function App() {
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
-                    name="NewsDetail"
-                    component={NewsDetailsScreen}
+                    name="PostDetail"
+                    component={PostDetailScreen}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
