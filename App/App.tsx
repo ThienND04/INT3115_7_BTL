@@ -8,6 +8,7 @@ import LoginScreen from "./screens/LoginScreen.js";
 import LoadingScreen from './screens/LoadingScreen.js';
 import SignUpScreen from './screens/SignUpScreen.js';
 import PostDetailScreen from './screens/PostDetailScreen.js';
+import CreatePostScreen from './screens/CreatePostScreen.js';
 
 const Stack = createStackNavigator();
 
@@ -48,6 +49,11 @@ export default function App() {
                 <Stack.Screen
                     name="Loading"
                     component={LoadingScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="CreatePost"
+                    component={CreatePostScreen}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>

@@ -1,9 +1,16 @@
 import axiosInstance from './axiosConfig';
 
-// Lấy danh sách tin tức
-export const createPost = async (postData) => {
+// tạo post
+export const createPost = async (title, content, category) => {
     try {
-        const response = await axiosInstance.post('/post', postData);
+        const response = await axiosInstance.put('/post', {
+            'postId': 0, 
+            'title': title,
+            'content': content,
+            'category': category, 
+            'date': getCurrentDate,
+            'viewCount': Math.floor(Math.random() * 1000)
+        });
         return response.data;
     } catch (error) {
         console.error('Error creating post:', error.response.data);
@@ -53,10 +60,21 @@ export const getPostsByCategory = async (category, page, perPage) => {
 
 export const getNewPosts = async (page, perPage) => {
     try {
-      const response = await axiosInstance.get(`/post/newPost?page=${page}&perPage=${perPage}`);
-      return response.data; // Assumes the API returns a list of posts
+        const response = await axiosInstance.get(`/post/newPost?page=${page}&perPage=${perPage}`);
+        return response.data; // Assumes the API returns a list of posts
     } catch (error) {
-      console.error('Error fetching new posts:', error.response?.data || error.message);
-      throw error;
+        console.error('Error fetching new posts:', error.response?.data || error.message);
+        throw error;
     }
-  };
+};
+
+const getCurrentDate = () => {
+
+    var date = new Date().getDate();
+    var month = new Date().getMonth() + 1;
+    var year = new Date().getFullYear();
+
+    //Alert.alert(date + '-' + month + '-' + year);
+    // You can turn it in to your desired format
+    return date + '-' + month + '-' + year;//format: d-m-y;
+}

@@ -26,7 +26,7 @@ export default function HomeScreen() {
             let cnt = 0;
 
             for (const post of data) {
-                cnt ++;
+                cnt++;
                 console.log(cnt);
                 if (tmp == null || post.viewCount > tmp.viewCount) {
                     tmp = post
@@ -139,7 +139,7 @@ export default function HomeScreen() {
                                 <Text style={styles.headlineDescription}>{headlinePost.content}</Text>
                                 <TouchableOpacity
                                     style={styles.readButton}
-                                    onPress={() => navigation.navigate('PostDetail', { post : headlinePost })}
+                                    onPress={() => navigation.navigate('PostDetail', { post: headlinePost })}
                                 >
                                     <Text style={styles.readButtonText}>Đọc</Text>
                                 </TouchableOpacity>
@@ -157,6 +157,12 @@ export default function HomeScreen() {
                     />
                 </ScrollView>
             )}
+            <TouchableOpacity
+                style={styles.floatingActionButton}
+                onPress={() => navigation.navigate('CreatePost')}
+            >
+                <Icon name="add" size={24} color="black" />
+            </TouchableOpacity>
             <View style={styles.bottomTab}>
                 <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('Home')}>
                     <Icon name="home" size={28} color="#000" />
@@ -363,4 +369,22 @@ const styles = StyleSheet.create({
     menuText: {
         fontSize: 16,
     },
+    floatingActionButton: {
+        position: 'absolute',
+        bottom: 80,
+        right: 16,
+        backgroundColor: '#F7F7F7',
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 5, // Tạo hiệu ứng nổi
+    },
+    floatingActionButtonText: {
+        marginLeft: 8, 
+        fontSize: 14, 
+        color: 'white', 
+        fontWeight: 'bold'
+    }
 });
