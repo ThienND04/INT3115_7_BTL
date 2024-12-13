@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image, ScrollView } from 'react-native';
-
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ScrollView } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
 
 const QuizTab = createBottomTabNavigator();
 const questionsData = [
@@ -178,7 +178,7 @@ const questionsData = [
 
 
 
-function QuizzHomeScreen({navigation}) {
+function QuizzHomeScreen({ navigation }) {
     const categories = [
         { id: '1', title: 'Định nghĩa và khái niệm', updatedAt: 'Updated today' },
         { id: '2', title: 'Nguyên nhân', updatedAt: 'Updated today' },
@@ -188,7 +188,7 @@ function QuizzHomeScreen({navigation}) {
     ];
 
     const [recentQuizzes, setRecentQuizzes] = useState(
-            categories.map(category => ({
+        categories.map(category => ({
             id: category.id,
             title: category.title,
             questions: questionsData.filter(q => q.category === category.title).length,
@@ -202,7 +202,7 @@ function QuizzHomeScreen({navigation}) {
             onPress={() => {
                 navigation.navigate('Câu hỏi', { category: item.title });
                 addRecentQuiz(item.title, 'Incomplete')
-        }}
+            }}
         >
             <View style={styles.placeholderIcon} />
             <Text style={styles.categoryTitle} numberOfLines={1} ellipsizeMode='tail'>{item.title}</Text>
@@ -608,4 +608,3 @@ const styles = StyleSheet.create({
         color: '#FFD700', // Màu vàng
     },
 });
-

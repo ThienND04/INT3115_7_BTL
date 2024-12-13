@@ -3,8 +3,9 @@ import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ScrollView, 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { getNewPosts } from '../service/postApi';
+import { getNewPosts, getPostsByCategory } from '../service/postApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default function HomeScreen() {
     const navigation = useNavigation();
@@ -13,14 +14,21 @@ export default function HomeScreen() {
     const [headlinePost, setHeadlinePost] = useState(null);
     const [loading, setLoading] = useState(true);
     const [menuVisible, setMenuVisible] = useState(false);
+    const [categories, setCategories] = useState(['All', 'Drugs', 'Crime', 'Politics', 'Economy']);
+    const [selectedCategory, setSelectedCategory] = useState('All');
 
     useEffect(() => {
         fetchPosts();
-    }, []);
+    }, [selectedCategory]);
 
     const fetchPosts = async () => {
         try {
-            const data = await getNewPosts(0, 20);
+            let data;
+            if (selectedCategory === 'All') {
+                data = await getNewPosts(0, 20);
+            } else {
+                data = await getPostsByCategory(selectedCategory, 0, 20);
+            }
             setPosts(data);
             let tmp = null;
             let cnt = 0;
@@ -81,20 +89,39 @@ export default function HomeScreen() {
         </TouchableOpacity>
     );
 
+    const renderCategory = ({ item }) => (
+        <TouchableOpacity
+            style={[styles.categoryItem, selectedCategory === item && styles.selectedCategoryItem]}
+            onPress={() => setSelectedCategory(item)}
+        >
+            <Text style={[styles.categoryText, selectedCategory === item && styles.selectedCategoryText]}>{item}</Text>
+        </TouchableOpacity>
+    );
+
     return (
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <Image
+            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+            <Image
                     source={{ uri: 'https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D' }}
                     style={styles.avatar}
-                />
+            />
+            </TouchableOpacity>
                 <Text style={styles.headerTitle}>Trang chủ</Text>
                 <TouchableOpacity onPress={toggleMenu}>
                     <Text style={styles.icon}>☰</Text>
                 </TouchableOpacity>
             </View>
-            {/* Popup Menu */}
+            <FlatList
+                data={categories}
+                renderItem={renderCategory}
+                keyExtractor={(item) => item}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.categoriesBar}
+                contentContainerStyle={styles.categoriesContentContainer}
+            />
             {menuVisible && (
                 <View style={styles.menuContainer}>
                     {/* Overlay nền tối */}
@@ -176,9 +203,12 @@ export default function HomeScreen() {
                     <Icon name="quiz" size={28} color="#000" />
                     <Text style={styles.tabText}>Câu đố</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('Profile')}>
-                    <Icon name="person" size={28} color="#000" />
-                    <Text style={styles.tabText}>Hồ sơ</Text>
+                <TouchableOpacity
+                    style={styles.tabItem}
+                    onPress={() => navigation.navigate('Discussion')}
+                >
+                    <MaterialIcons name="forum" size={28} color="#000" />
+                    <Text style={styles.tabText}>Thảo luận</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -241,7 +271,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     readButton: {
-        backgroundColor: '#6200EE',
+        backgroundColor: '#000',
         paddingVertical: 10,
         borderRadius: 8,
         alignItems: 'center',
@@ -382,9 +412,37 @@ const styles = StyleSheet.create({
         elevation: 5, // Tạo hiệu ứng nổi
     },
     floatingActionButtonText: {
-        marginLeft: 8, 
-        fontSize: 14, 
-        color: 'white', 
+        marginLeft: 8,
+        fontSize: 14,
+        color: 'white',
         fontWeight: 'bold'
-    }
+    },
+    categoriesBar: {
+        paddingVertical: 10,
+        maxHeight: 60,
+        minHeight: 60,
+        paddingHorizontal: 16,
+        backgroundColor: '#FFF',
+        elevation: 2,
+    },
+    categoriesContentContainer: {
+        minHeight: 40,
+        maxHeight: 40, // Limit the height of the categories bar
+    },
+    categoryItem: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 20,
+        backgroundColor: '#F0F0F0',
+        marginRight: 8,
+    },
+    selectedCategoryItem: {
+        backgroundColor: '#000',
+    },
+    categoryText: {
+        color: '#333',
+    },
+    selectedCategoryText: {
+        color: '#FFF',
+    },
 });

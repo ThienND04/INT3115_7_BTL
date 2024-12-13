@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, Button, StyleSheet, Alert, ActivityIndicator, ToastAndroid, Keyboard, Platform, KeyboardAvoidingView } from 'react-native';
 import { loginUser } from '../service/userApi';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');

@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // Đăng nhập
 export const loginUser = async (_email, _password) => {
     try {
+        console.log("auto login")
         const response = await axiosInstance.post('/auth/login', {
             email: _email,
             password: _password,

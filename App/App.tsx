@@ -9,6 +9,8 @@ import LoadingScreen from './screens/LoadingScreen.js';
 import SignUpScreen from './screens/SignUpScreen.js';
 import PostDetailScreen from './screens/PostDetailScreen.js';
 import CreatePostScreen from './screens/CreatePostScreen.js';
+import EditProfileScreen from './screens/EditProfileScreen.js';
+import DiscussionScreen from './screens/DiscussionScreen.js';
 
 const Stack = createStackNavigator();
 
@@ -54,6 +56,16 @@ export default function App() {
                 <Stack.Screen
                     name="CreatePost"
                     component={CreatePostScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="Discussion"
+                    component={DiscussionScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="EditProfile"
+                    component={EditProfileScreen}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>
