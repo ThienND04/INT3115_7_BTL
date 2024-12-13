@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image, ScrollView } from 'react-native';
-
+import { useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -248,6 +248,14 @@ function QuizzHomeScreen({navigation}) {
 
     return (
         <View style={styles.container}>
+             {/* TopAppBar with Back Button */}
+             <View style={styles.topAppBar}>
+                <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.backButton}>
+                    <Icon name="arrow-left" size={24} color="#000" />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Trang chủ</Text>
+            </View>
+
             {/* Header */}
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Chào bạn User,</Text>
@@ -394,6 +402,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#FFF',
         padding: 16,
+    },
+    backButton: {
+        marginRight: 16,
     },
     header: {
         marginBottom: 24,
