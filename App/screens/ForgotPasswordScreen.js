@@ -1,28 +1,27 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Button, StyleSheet, Alert, ActivityIndicator, ToastAndroid, Keyboard, Platform, KeyboardAvoidingView } from 'react-native';
-import { loginUser } from '../service/userApi';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Alert, ActivityIndicator, ToastAndroid, Keyboard, Platform, KeyboardAvoidingView } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-export default function LoginScreen({ navigation }) {
+export default function ForgotPasswordScreen() {
+    const navigation = useNavigation();
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false); // Trạng thái loading
 
-    const handleLogin = async () => {
-        if (email === '' || password === '') {
-            ToastAndroid.show('Vui lòng nhập đầy đủ thông tin!', ToastAndroid.SHORT);
+    const handleForgotPassword = async () => {
+        if (email === '') {
+            ToastAndroid.show('Vui lòng nhập email!', ToastAndroid.SHORT);
         } else {
             setLoading(true);
             try {
-                const response = await loginUser(email, password);
-                console.log('Login response:', response.data);
-
-                ToastAndroid.show("Đăng nhập thành công!", ToastAndroid.SHORT);
-                navigation.navigate('Home'); // Điều hướng về màn hình Home
+                // Call API to handle forgot password
+                // await forgotPassword(email);
+                ToastAndroid.show("Yêu cầu đặt lại mật khẩu đã được gửi!", ToastAndroid.SHORT);
+                navigation.navigate('Login'); // Điều hướng về màn hình Login
             } catch (error) {
-                ToastAndroid.show('Đăng nhập thất bại. Vui lòng thử lại.', ToastAndroid.SHORT);
-                console.error('Login error 2:', error.response?.data || error.message);
+                ToastAndroid.show('Yêu cầu thất bại. Vui lòng thử lại.', ToastAndroid.SHORT);
+                console.error('Forgot password error:', error.response?.data || error.message);
             } finally {
                 setLoading(false);
             }
@@ -37,7 +36,7 @@ export default function LoginScreen({ navigation }) {
         <KeyboardAvoidingView style={styles.container}>
             <TouchableWithoutFeedback onPress={dismissKeyboard}>
                 <View style={styles.inner}>
-                    <Text style={styles.title}>Đăng nhập</Text>
+                    <Text style={styles.title}>Quên mật khẩu</Text>
 
                     <View style={styles.form}>
                         {/* Email */}
@@ -53,35 +52,19 @@ export default function LoginScreen({ navigation }) {
                             />
                         </View>
 
-                        {/* Password */}
-                        <View style={styles.inputContainer}>
-                            <Text style={styles.label}>Mật khẩu</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Nhập mật khẩu"
-                                placeholderTextColor="#999"
-                                secureTextEntry
-                                value={password}
-                                onChangeText={setPassword}
-                            />
-                        </View>
-
-                        {/* Login Button */}
+                        {/* Forgot Password Button */}
                         {loading ? (
                             <ActivityIndicator size="large" color="#42a5f5" />
                         ) : (
-                            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                                <Text style={styles.loginText}>Đăng nhập</Text>
+                            <TouchableOpacity style={styles.forgotPasswordButton} onPress={handleForgotPassword}>
+                                <Text style={styles.forgotPasswordText}>Gửi yêu cầu</Text>
                             </TouchableOpacity>
                         )}
 
                         {/* Footer Links */}
                         <View style={styles.footerLinks}>
-                            <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
-                                <Text style={styles.link}>Chưa có tài khoản? Đăng ký</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
-                                <Text style={styles.link}>Quên mật khẩu</Text>
+                            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+                                <Text style={styles.link}>Quay lại đăng nhập</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -136,7 +119,7 @@ const styles = StyleSheet.create({
         borderColor: "#DDD",
         borderWidth: 1,
     },
-    loginButton: {
+    forgotPasswordButton: {
         backgroundColor: "#000",
         height: 50,
         justifyContent: "center",
@@ -144,7 +127,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginTop: 10,
     },
-    loginText: {
+    forgotPasswordText: {
         color: "#FFF",
         fontSize: 16,
         fontWeight: "bold",

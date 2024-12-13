@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const QuizTab = createBottomTabNavigator();
 const questionsData = [
@@ -176,17 +176,15 @@ const questionsData = [
     }
 ]
 
-
+const categories = [
+    { id: '1', title: 'Định nghĩa và khái niệm', updatedAt: 'Updated today', image: 'https://example.com/image1.jpg' },
+    { id: '2', title: 'Nguyên nhân', updatedAt: 'Updated today', image: 'https://example.com/image2.jpg' },
+    { id: '3', title: 'Tác hại', updatedAt: 'Updated today', image: 'https://example.com/image3.jpg' },
+    { id: '4', title: 'Phòng chống', updatedAt: 'Updated today', image: 'https://example.com/image4.jpg' },
+    { id: '5', title: 'Hậu quả', updatedAt: 'Updated today', image: 'https://example.com/image5.jpg' },
+];
 
 function QuizzHomeScreen({ navigation }) {
-    const categories = [
-        { id: '1', title: 'Định nghĩa và khái niệm', updatedAt: 'Updated today' },
-        { id: '2', title: 'Nguyên nhân', updatedAt: 'Updated today' },
-        { id: '3', title: 'Tác hại', updatedAt: 'Updated today' },
-        { id: '4', title: 'Phòng chống', updatedAt: 'Updated today' },
-        { id: '5', title: 'Hậu quả', updatedAt: 'Updated today' },
-    ];
-
     const [recentQuizzes, setRecentQuizzes] = useState(
         categories.map(category => ({
             id: category.id,
@@ -201,12 +199,12 @@ function QuizzHomeScreen({ navigation }) {
             style={styles.categoryItem}
             onPress={() => {
                 navigation.navigate('Câu hỏi', { category: item.title });
-                addRecentQuiz(item.title, 'Incomplete')
+                addRecentQuiz(item.title, 'Incomplete');
             }}
         >
-            <View style={styles.placeholderIcon} />
+            <Image source={{ uri: 'https://cdn-icons-png.freepik.com/256/2645/2645984.png?semt=ais_hybrid' }} style={styles.categoryImage} />
             <Text style={styles.categoryTitle} numberOfLines={1} ellipsizeMode='tail'>{item.title}</Text>
-            <Text style={styles.categorySubtitle}>{item.updatedAt}</Text>
+            {/* <Text style={styles.categorySubtitle}>{item.updatedAt}</Text> */}
         </TouchableOpacity>
     );
 
@@ -235,7 +233,7 @@ function QuizzHomeScreen({ navigation }) {
 
     const renderRecentItem = ({ item }) => (
         <View style={styles.recentItem}>
-            <View style={styles.recentplaceholderIcon} />
+            <Image source={{ uri: 'https://cdn-icons-png.freepik.com/256/2645/2645984.png?semt=ais_hybrid' }} style={styles.categoryImage} />
             <View style={styles.recentTextContainer}>
                 <Text style={styles.recentTitle}>{item.title}</Text>
                 <Text style={styles.recentSubtitle}>{item.questions} câu hỏi</Text>
@@ -248,22 +246,22 @@ function QuizzHomeScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
-             {/* TopAppBar with Back Button */}
-             <View style={styles.topAppBar}>
-                <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.backButton}>
-                    <Icon name="arrow-left" size={24} color="#000" />
+            {/* TopAppBar with Back Button */}
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Icon name="arrow-back" size={24} color="#000" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Trang chủ</Text>
+                <Text style={styles.headerTitle}>Học tập</Text>
             </View>
 
             {/* Header */}
-            <View style={styles.header}>
+            <View style={styles.headerContent}>
                 <Text style={styles.headerTitle}>Chào bạn User,</Text>
                 <Text style={styles.headerSubtitle}>Tiến hành trả lời câu hỏi để nâng cao độ hiểu biết về các vấn đề tệ nạn xã hội và kiểm tra kiến thức của bạn!</Text>
                 <TouchableOpacity style={styles.startButton} onPress={handleRandomCategory}>
-                    
+
                     <Text style={styles.startButtonText}>Trả lời bộ câu hỏi ngẫu nhiên </Text>
-                    <Icon name="random" size={12} color="#FFF" />
+                    <Icon name="shuffle" size={12} color="#FFF" />
                 </TouchableOpacity>
             </View>
 
@@ -329,11 +327,11 @@ function QuestionsScreen({ route, navigation }) {
     return (
         <View style={styles.container}>
             {/* Header */}
-            <View style={styles.quizzheader}>
-                <View style={styles.questionProgress}>
-                    <Text style={styles.progressText}>Bộ câu hỏi {category} </Text>
-                </View>
-                <Text style={styles.progressText}>Câu {currentQuestion + 1} trên {totalQuestions}</Text>
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Icon name="arrow-back" size={24} color="#000" />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Câu hỏi</Text>
             </View>
 
             {/* Question */}
@@ -344,7 +342,7 @@ function QuestionsScreen({ route, navigation }) {
             {/* Options */}
             <Text style={styles.scoreText}>Điểm: {score}</Text>
             <Text style={styles.selectInstruction}>Chọn câu trả lời đúng</Text>
-                <View style={styles.optionsContainer}>
+            <View style={styles.optionsContainer}>
                 {filteredQuestions[currentQuestion].options.map((option, index) => (
                     <TouchableOpacity
                         key={index}
@@ -367,31 +365,31 @@ function QuestionsScreen({ route, navigation }) {
                 </TouchableOpacity>
             </View>
             */}
-        
+
         </View>
     );
 }
 
 export default function QuizScreen() {
     return (
-        <QuizTab.Navigator>
-            <QuizTab.Screen 
-                name="Trang chủ" 
-                component={QuizzHomeScreen} 
+        <QuizTab.Navigator screenOptions={{ headerShown: false }}>
+            <QuizTab.Screen
+                name="Trang chủ"
+                component={QuizzHomeScreen}
                 options={{
                     tabBarIcon: ({ color, size }) => (
                         <Icon name="home" color={color} size={size} />
                     ),
                 }}
             />
-            <QuizTab.Screen 
-                name="Câu hỏi" 
+            <QuizTab.Screen
+                name="Câu hỏi"
                 component={QuestionsScreen}
                 options={{
-                    tabBarIcon: ({color,size}) => (
-                        <Icon name="question-circle" color={color} size={size} /> 
+                    tabBarIcon: ({ color, size }) => (
+                        <Icon name="help-outline" color={color} size={size} />
                     ),
-                }} 
+                }}
             />
         </QuizTab.Navigator>
     );
@@ -400,22 +398,31 @@ export default function QuizScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFF',
-        padding: 16,
+        paddingTop: 16,
+        // padding: 16,
+        backgroundColor: '#f9f9f9',
     },
     backButton: {
         marginRight: 16,
     },
     header: {
-        marginBottom: 24,
-        padding: 16,
-        backgroundColor: '#EDE9D7',
-        borderRadius: 16,
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 20,
+        height: 100,
     },
     headerTitle: {
-        fontSize: 24,
+        flex: 1,
+        fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 8,
+        color: '#333',
+    },
+    headerContent: {
+        marginBottom: 16,
+        padding: 16,
+        marginHorizontal: 16,
+        backgroundColor: '#EDE9D7',
+        borderRadius: 16,
     },
     headerSubtitle: {
         fontSize: 14,
@@ -424,7 +431,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     startButton: {
-        flexDirection:'row',
+        flexDirection: 'row',
         backgroundColor: '#4CAF50',
         alignItems: 'center',
         marginTop: 8,
@@ -443,39 +450,37 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 8,
+        paddingHorizontal: 16,
     },
     categoriesList: {
         marginBottom: 8,
+        paddingHorizontal: 16,
     },
     categoryItem: {
         width: 100,
-        height: 200,
-        //backgroundColor: '#F3F3F3',
+        height: 250,
         marginRight: 8,
         borderRadius: 8,
         alignItems: 'left',
-        //justifyContent: 'center',
         padding: 4,
     },
-    placeholderIcon: {
+    categoryImage: {
         width: 90,
         height: 90,
-        backgroundColor: '#CCC',
         borderRadius: 16,
         marginBottom: 8,
     },
     categoryTitle: {
         fontSize: 14,
         fontWeight: 'bold',
-        //textAlign: 'left',
     },
     categorySubtitle: {
         fontSize: 12,
         color: '#666',
-        //textAlign: 'left',
     },
     recentList: {
         paddingTop: 4,
+        paddingHorizontal: 16,
     },
     recentplaceholderIcon: {
         width: 80,
@@ -488,8 +493,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 8,
-        //padding: 0,
-        //backgroundColor: '#F3F3F3',
         borderRadius: 8,
     },
     recentTextContainer: {
@@ -518,27 +521,9 @@ const styles = StyleSheet.create({
         color: '#FFF',
         backgroundColor: '#F44336',
     },
-    quizzheader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 16,
-    },
-    questionProgress: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 4,
-        paddingHorizontal: 12,
-        borderWidth: 1,
-        borderColor: '#CCC',
-        borderRadius: 16,
-    },
-    progressText: {
-        fontSize: 14,
-        fontWeight: 'bold',
-    },
     questionContainer: {
         flex: 1,
+        padding: 16,
     },
     questionText: {
         fontSize: 32,
@@ -568,26 +553,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-    footer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-
-    nextButton: {
-        backgroundColor: '#4CAF50',
-        padding: 16,
-        borderRadius: 8,
-        paddingVertical: 10,
-        paddingHorizontal: 24,
-        backgroundColor: '#90CAF9',
-        borderRadius: 8,
-    },
-    nextText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#FFF',
-    },
     divider: {
         height: 1,
         backgroundColor: '#CCC',
@@ -597,25 +562,6 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 10,
-        textAlign: 'right'
-    },
-    points: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: '#4CAF50', // Màu xanh
-        marginBottom: 20,
-    },
-    congratulations: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    message: {
-        fontSize: 18,
-        marginBottom: 20,
-    },
-    pointsText: {
-        fontSize: 20,
-        color: '#FFD700', // Màu vàng
+        textAlign: 'right',
     },
 });
