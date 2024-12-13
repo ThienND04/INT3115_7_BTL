@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ScrollView, ActivityIndicator, ToastAndroid } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator, ToastAndroid } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { getNewPosts, getPostsByCategory } from '../service/postApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default function HomeScreen() {
     const navigation = useNavigation();
 
-    const [posts, setPosts] = useState([])
+    const [posts, setPosts] = useState([]);
     const [headlinePost, setHeadlinePost] = useState(null);
     const [loading, setLoading] = useState(true);
     const [menuVisible, setMenuVisible] = useState(false);
-    const [categories, setCategories] = useState(['All', 'Drugs', 'Crime', 'Politics', 'Economy']);
-    const [selectedCategory, setSelectedCategory] = useState('All');
+    const [categories, setCategories] = useState(['Tất cả', 'Ma tuý', 'Tội phạm', 'Cờ bạc', 'Giao thông']);
+    const [selectedCategory, setSelectedCategory] = useState('Tất cả');
 
     useEffect(() => {
         fetchPosts();
@@ -24,10 +22,10 @@ export default function HomeScreen() {
     const fetchPosts = async () => {
         try {
             let data;
-            if (selectedCategory === 'All') {
-                data = await getNewPosts(0, 20);
+            if (selectedCategory === 'Tất cả') {
+                data = hardcodedPosts;
             } else {
-                data = await getPostsByCategory(selectedCategory, 0, 20);
+                data = hardcodedPosts.filter(post => post.category === selectedCategory);
             }
             setPosts(data);
             let tmp = null;
@@ -37,7 +35,7 @@ export default function HomeScreen() {
                 cnt++;
                 console.log(cnt);
                 if (tmp == null || post.viewCount > tmp.viewCount) {
-                    tmp = post
+                    tmp = post;
                     console.log('headlinepose ok: ', cnt);
                 }
             }
@@ -59,12 +57,11 @@ export default function HomeScreen() {
 
     const logOut = async () => {
         try {
-            await AsyncStorage.clear()
-            navigation.navigate('Login')
+            await AsyncStorage.clear();
+            navigation.navigate('Login');
             ToastAndroid.show("Đăng xuất!", ToastAndroid.SHORT);
-        }
-        catch (error) {
-            console.log(error)
+        } catch (error) {
+            console.log(error);
         }
     };
 
@@ -102,12 +99,12 @@ export default function HomeScreen() {
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-            <Image
-                    source={{ uri: 'https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D' }}
-                    style={styles.avatar}
-            />
-            </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+                    <Image
+                        source={{ uri: 'https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D' }}
+                        style={styles.avatar}
+                    />
+                </TouchableOpacity>
                 <Text style={styles.headerTitle}>Trang chủ</Text>
                 <TouchableOpacity onPress={toggleMenu}>
                     <Text style={styles.icon}>☰</Text>
@@ -145,7 +142,7 @@ export default function HomeScreen() {
                         <TouchableOpacity
                             style={styles.menuItem}
                             onPress={() => {
-                                logOut()
+                                logOut();
                             }}
                         >
                             <Text style={styles.menuText}>Đăng xuất</Text>
@@ -156,33 +153,35 @@ export default function HomeScreen() {
             {loading ? (
                 <ActivityIndicator size="large" color="#6200EE" />
             ) : (
-                <ScrollView>
-                    {/* Headline Post */}
-                    {headlinePost && (
-                        <View style={styles.headline}>
-                            <Image source={{ uri: 'https://images.baodantoc.vn/uploads/2020/Th%C3%A1ng%206/Ng%C3%A0y_16/2051fd49-6d6b-4f43-a023-5e23e07f175c.jpg' }} style={styles.headlineImage} />
-                            <View style={styles.headlineContent}>
-                                <Text style={styles.headlineTitle}>{headlinePost.title}</Text>
-                                <Text style={styles.headlineDescription}>{headlinePost.content}</Text>
-                                <TouchableOpacity
-                                    style={styles.readButton}
-                                    onPress={() => navigation.navigate('PostDetail', { post: headlinePost })}
-                                >
-                                    <Text style={styles.readButtonText}>Đọc</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    )}
+                <FlatList
+                    data={posts}
+                    renderItem={renderPost}
+                    keyExtractor={(item) => item.postId.toString()}
+                    ListHeaderComponent={
+                        <>
+                            {/* Headline Post */}
+                            {headlinePost && (
+                                <View style={styles.headline}>
+                                    <Image source={{ uri: 'https://images.baodantoc.vn/uploads/2020/Th%C3%A1ng%206/Ng%C3%A0y_16/2051fd49-6d6b-4f43-a023-5e23e07f175c.jpg' }} style={styles.headlineImage} />
+                                    <View style={styles.headlineContent}>
+                                        <Text style={styles.headlineTitle}>{headlinePost.title}</Text>
+                                        <Text style={styles.headlineDescription}>{headlinePost.content}</Text>
+                                        <TouchableOpacity
+                                            style={styles.readButton}
+                                            onPress={() => navigation.navigate('PostDetail', { post: headlinePost })}
+                                        >
+                                            <Text style={styles.readButtonText}>Đọc</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            )}
 
-                    {/* Danh sách bài viết mới */}
-                    <Text style={styles.sectionTitle}>Tin mới</Text>
-                    <FlatList
-                        data={posts}
-                        renderItem={renderPost}
-                        keyExtractor={(item) => item.postId.toString()}
-                        contentContainerStyle={styles.postList}
-                    />
-                </ScrollView>
+                            {/* Danh sách bài viết mới */}
+                            <Text style={styles.sectionTitle}>Tin mới</Text>
+                        </>
+                    }
+                    contentContainerStyle={styles.postList}
+                />
             )}
             <TouchableOpacity
                 style={styles.floatingActionButton}
@@ -195,10 +194,6 @@ export default function HomeScreen() {
                     <Icon name="home" size={28} color="#000" />
                     <Text style={styles.tabText}>Trang chủ</Text>
                 </TouchableOpacity>
-                {/* <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('Search')}>
-                    <Icon name="search" size={28} color="#000" />
-                    <Text style={styles.tabText}>Tìm kiếm</Text>
-                </TouchableOpacity> */}
                 <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('Quiz')}>
                     <Icon name="quiz" size={28} color="#000" />
                     <Text style={styles.tabText}>Câu đố</Text>
@@ -215,6 +210,20 @@ export default function HomeScreen() {
     );
 }
 
+const hardcodedPosts = [
+    { postId: 1, title: 'Nguy cơ từ ma tuý trong học đường', content: 'Ma tuý đang len lỏi vào môi trường học đường, gây ảnh hưởng nghiêm trọng đến thế hệ trẻ.', category: 'Ma tuý', viewCount: 120 },
+    { postId: 2, title: 'Hành vi phạm tội gia tăng trong đô thị', content: 'Các khu đô thị lớn đang chứng kiến sự gia tăng đáng kể của các vụ phạm tội, đặc biệt là trộm cắp và cướp giật.', category: 'Tội phạm', viewCount: 180 },
+    { postId: 3, title: 'Cảnh báo tác hại của cờ bạc online', content: 'Cờ bạc trực tuyến không chỉ làm mất tiền bạc mà còn gây ảnh hưởng tiêu cực đến tâm lý người chơi.', category: 'Cờ bạc', viewCount: 210 },
+    { postId: 4, title: 'Tai nạn giao thông gia tăng trong dịp lễ', content: 'Số lượng tai nạn giao thông tăng cao trong các kỳ nghỉ lễ, chủ yếu do vi phạm tốc độ và uống rượu khi lái xe.', category: 'Giao thông', viewCount: 260 },
+    { postId: 5, title: 'Những cách nhận biết ma tuý tổng hợp', content: 'Ma tuý tổng hợp ngày càng phổ biến với nhiều hình thức khác nhau, cần nhận biết để phòng tránh.', category: 'Ma tuý', viewCount: 310 },
+    { postId: 6, title: 'Công nghệ và hành vi phạm tội mạng', content: 'Sự phát triển của công nghệ kéo theo các hình thức phạm tội mạng ngày càng tinh vi và khó phát hiện.', category: 'Tội phạm', viewCount: 230 },
+    { postId: 7, title: 'Cờ bạc trái phép trong các sòng bài tự phát', content: 'Những sòng bài tự phát tại địa phương gây ra nhiều hậu quả nghiêm trọng cho cộng đồng.', category: 'Cờ bạc', viewCount: 190 },
+    { postId: 8, title: 'Biện pháp giảm ùn tắc giao thông tại đô thị', content: 'Các giải pháp thông minh như giao thông thông minh và mở rộng hạ tầng giao thông đang được triển khai.', category: 'Giao thông', viewCount: 280 },
+    { postId: 9, title: 'Cảnh giác trước các loại ma tuý mới', content: 'Các loại ma tuý mới xuất hiện liên tục, gây khó khăn trong việc kiểm soát và xử lý.', category: 'Ma tuý', viewCount: 350 },
+    { postId: 10, title: 'Những thủ đoạn lừa đảo phổ biến', content: 'Những chiêu trò lừa đảo qua mạng đang khiến nhiều người mất cảnh giác và thiệt hại lớn.', category: 'Tội phạm', viewCount: 270 },
+];
+
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -227,7 +236,7 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#FFF',
         elevation: 3,
-        height: 100
+        height: 100,
     },
     avatar: {
         width: 40,
@@ -246,7 +255,7 @@ const styles = StyleSheet.create({
         color: '#333',
     },
     headline: {
-        margin: 16,
+        // margin: 16,
         backgroundColor: '#FFF',
         borderRadius: 8,
         elevation: 2,
@@ -305,7 +314,7 @@ const styles = StyleSheet.create({
         height: 80,
         margin: 10,
         borderRadius: 8,
-        resizeMode: 'contain'
+        resizeMode: 'contain',
     },
     postContent: {
         flex: 1,
@@ -319,7 +328,7 @@ const styles = StyleSheet.create({
     postDescription: {
         fontSize: 14,
         color: '#666',
-        marginVertical: 4
+        marginVertical: 4,
     },
     postFooter: {
         flexDirection: 'row',
@@ -335,7 +344,7 @@ const styles = StyleSheet.create({
         color: '#6200EE',
     },
     postInfo: {
-        padding: 10
+        padding: 10,
     },
     bottomTab: {
         flexDirection: 'row',
@@ -346,7 +355,7 @@ const styles = StyleSheet.create({
     },
     tabItem: {
         alignItems: 'center',
-        width: '30%'
+        width: '30%',
     },
     tabText: {
         color: '#FFF',
@@ -354,7 +363,7 @@ const styles = StyleSheet.create({
     },
     bottomTabIcon: {
         width: 20,
-        height: 20
+        height: 20,
     },
     menuContainer: {
         position: 'absolute',
@@ -415,7 +424,7 @@ const styles = StyleSheet.create({
         marginLeft: 8,
         fontSize: 14,
         color: 'white',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     categoriesBar: {
         paddingVertical: 10,

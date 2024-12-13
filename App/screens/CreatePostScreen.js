@@ -20,6 +20,8 @@ export default function CreatePostScreen({ navigation }) {
     const [imageUri, setImageUri] = useState(null);
     const [error, setError] = useState('');
 
+    const categories = ['Ma tuý', 'Tội phạm', 'Cờ bạc', 'Giao thông'];
+
     const handlePickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!permissionResult.granted) {
@@ -94,17 +96,29 @@ export default function CreatePostScreen({ navigation }) {
                     numberOfLines={50}
                 />
 
-                {/* Trường Danh mục */} 
+                {/* Trường Danh mục */}
                 <Text style={styles.label}>Danh mục</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Nhập danh mục (ví dụ: Ma tuý, mại dâm, ...)"
-                    value={category}
-                    onChangeText={(text) => {
-                        setError('');
-                        setCategory(text);
-                    }}
-                />
+                <View style={styles.categoryContainer}>
+                    {categories.map((cat) => (
+                        <TouchableOpacity
+                            key={cat}
+                            style={[
+                                styles.categoryItem,
+                                category === cat && styles.selectedCategoryItem,
+                            ]}
+                            onPress={() => setCategory(cat)}
+                        >
+                            <Text
+                                style={[
+                                    styles.categoryText,
+                                    category === cat && styles.selectedCategoryText,
+                                ]}
+                            >
+                                {cat}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
 
                 {/* Khu vực chọn ảnh */}
                 <Text style={styles.label}>Hình ảnh minh hoạ</Text>
@@ -171,6 +185,28 @@ const styles = StyleSheet.create({
     textArea: {
         // height: 120,
         textAlignVertical: 'top',
+    },
+    categoryContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginBottom: 16,
+    },
+    categoryItem: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 20,
+        backgroundColor: '#F0F0F0',
+        marginRight: 8,
+        marginBottom: 8,
+    },
+    selectedCategoryItem: {
+        backgroundColor: '#000',
+    },
+    categoryText: {
+        color: '#333',
+    },
+    selectedCategoryText: {
+        color: '#FFF',
     },
     imagePreview: {
         width: '100%',

@@ -11,6 +11,9 @@ import PostDetailScreen from './screens/PostDetailScreen.js';
 import CreatePostScreen from './screens/CreatePostScreen.js';
 import EditProfileScreen from './screens/EditProfileScreen.js';
 import DiscussionScreen from './screens/DiscussionScreen.js';
+import CreateDiscussionScreen from './screens/CreateDiscussionScreen.js';
+import DiscussionDetail from './screens/DiscussionDetail.js';
+import ForgotPasswordScreen from './screens/ForgotPasswordScreen.js';
 
 const Stack = createStackNavigator();
 
@@ -26,6 +29,11 @@ export default function App() {
                 <Stack.Screen
                     name="SignUp"
                     component={SignUpScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="ForgotPassword"
+                    component={ForgotPasswordScreen}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
@@ -61,6 +69,16 @@ export default function App() {
                 <Stack.Screen
                     name="Discussion"
                     component={DiscussionScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="CreateDiscussion"
+                    component={CreateDiscussionScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="DiscussionDetail"
+                    component={DiscussionDetail}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen

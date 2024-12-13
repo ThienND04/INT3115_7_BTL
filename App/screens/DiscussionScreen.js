@@ -11,9 +11,9 @@ const DiscussionScreen = () => {
 
     // Dữ liệu giả lập bài viết
     const discussions = [
-        { id: '1', user: 'Nguyễn Đức Thiện', title: 'Hỏi đáp', content: 'Hiến pháp năm 2013 quy định ngôn ngữ quốc gia là tiếng gì?' },
-        { id: '2', user: 'Nguyễn minh triết', title: 'Pháp luật', content: 'Hiến pháp năm 2013 quy định Quốc ca nước Cộng hòa xã hội chủ nghĩa Việt Nam là nhạc và lời của bài:' },
-        { id: '3', user: 'Thiện', title: 'Buôn ma tuý', content: 'Buôn ma tuý bao nhiêu thì bị tử hình?' },
+        { id: '1', user: 'Nguyễn Đức Thiện', title: 'Hỏi đáp', content: 'Hiến pháp năm 2013 quy định ngôn ngữ quốc gia là tiếng gì?', likes: 10, comments: 2 },
+        { id: '2', user: 'Nguyễn minh triết', title: 'Pháp luật', content: 'Hiến pháp năm 2013 quy định Quốc ca nước Cộng hòa xã hội chủ nghĩa Việt Nam là nhạc và lời của bài:', likes: 5, comments: 1 },
+        { id: '3', user: 'Thiện', title: 'Buôn ma tuý', content: 'Buôn ma tuý bao nhiêu thì bị tử hình?', likes: 8, comments: 3 },
     ];
 
     useEffect(() => {
@@ -22,21 +22,27 @@ const DiscussionScreen = () => {
     }, []);
 
     const renderDiscussionItem = ({ item }) => (
-        <View style={styles.card}>
-            <View style={styles.cardHeader}>
-                <View style={styles.avatar}>
-                    <Text style={styles.avatarText}>{item.user[0]}</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('DiscussionDetail', { discussion: item })}>
+            <View style={styles.card}>
+                <View style={styles.cardHeader}>
+                    <View style={styles.avatar}>
+                        <Text style={styles.avatarText}>{item.user[0]}</Text>
+                    </View>
+                    <View style={styles.userInfo}>
+                        <Text style={styles.username}>{item.user}</Text>
+                    </View>
+                    <TouchableOpacity>
+                        <MaterialIcons name="more-vert" size={24} color="#888" />
+                    </TouchableOpacity>
                 </View>
-                <View style={styles.userInfo}>
-                    <Text style={styles.username}>{item.user}</Text>
+                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.content}>{item.content}</Text>
+                <View style={styles.cardFooter}>
+                    <Text style={styles.footerText}>Likes: {item.likes}</Text>
+                    <Text style={styles.footerText}>Comments: {item.comments}</Text>
                 </View>
-                <TouchableOpacity>
-                    <MaterialIcons name="more-vert" size={24} color="#888" />
-                </TouchableOpacity>
             </View>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.content}>{item.content}</Text>
-        </View>
+        </TouchableOpacity>
     );
 
     return (
@@ -59,7 +65,7 @@ const DiscussionScreen = () => {
             )}
             <TouchableOpacity
                 style={styles.fab}
-                onPress={() => navigation.navigate('CreatePostScreen')}
+                onPress={() => navigation.navigate('CreateDiscussion')}
             >
                 <MaterialIcons name="edit" size={24} color="white" />
                 <Text style={styles.fabText}>Viết bài</Text>
@@ -136,15 +142,13 @@ const styles = StyleSheet.create({
         color: '#555',
         marginBottom: 12,
     },
-    placeholder: {
+    cardFooter: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
     },
-    placeholderShape: {
-        width: 40,
-        height: 40,
-        borderRadius: 4,
-        backgroundColor: '#E5E5E5',
+    footerText: {
+        fontSize: 12,
+        color: '#888',
     },
     fab: {
         position: 'absolute',
